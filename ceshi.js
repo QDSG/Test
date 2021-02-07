@@ -24,3 +24,28 @@
             message : str
         })
     }
+
+    randomInt() {
+        console.log(this.state.limits)
+        const { max ,min } = this.state.limits;
+        const num = parseInt(Math.random()*max+min, 10);
+        this.setState({
+            flag: num,
+        }, function() {
+            console.log(this.state);
+        })
+    }
+    pageChange(key){
+        let obj = {
+            setM: false,//初始化最大值最小值界面
+            setFlag: false,//设置待猜数字环节
+            playS: false,//游戏开始界面
+            playE: false,//游戏结束惩罚环节
+        }
+        obj[key] = true;
+        this.setState({
+            changePage: obj,
+        },function () {
+            console.log(this.state);
+        });
+    }
