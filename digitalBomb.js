@@ -36,3 +36,48 @@ class Test extends React.Component {
     componentDidMount() {
         // this.randomInt()
     }
+    setLimits(min, max) {
+        if( max > min ){
+            let str = '请输入' + min +' ~ ' + max + '的数字(不含' + max + ')';
+            this.setState({
+                limits: {
+                    max: max,
+                    min: min,
+                },
+                preN: {
+                    pre: min,//上一个猜到的数字
+                    next: max,//这次猜到的数字
+                },
+                message: str,
+            }, function() {
+                console.log(this.state);
+            })
+            this.pageChange('setFlag');//切换到设置数字环节
+        }else{
+            alert('请输入正确格式：例如 1~100');
+        }
+    }
+    setFlagNum() {
+        const { flag, limits: { max ,min } }  = this.state;
+        if(flag < max && flag > min){
+            this.pageChange('playS');//切换到数字猜测环节
+        }
+    }
+    handleChange(e, key1, key2 ) {
+        let obj = {};
+        if(key2) {
+            obj[key1] = this.state[key1];
+            obj[key1][key2] = e.target.value;
+            this.setState({
+                [key1]: obj[key1]
+            }, function () {
+                console.log(this.state);
+            });
+        }else{
+            this.setState({
+                [key1]: e.target.value - 0,
+            }, function () {
+                console.log(this.state);
+            });
+        }
+    }
