@@ -1,0 +1,118 @@
+<!--
+ * @Author: gc
+ * @Date: 2021-02-18 17:32:24
+ * @LastEditors: c
+ * @LastEditTime: 2021-02-20 17:27:56
+ * @FilePath: \gobang\index.html
+ * @Description: 五子棋页面
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <input id="name" type="number">
+        <button onclick="join()">登录</button>
+        <button onclick="setName()">注册</button>
+        <button onclick="close()">断开连接</button>
+    </body>
+    <script>
+        //所有初始化的数据
+        var message = {};   //用来接收服务端发过来的信息
+        var ws;
+
+        //设置用户id
+        function sendMessage(type, mes) {
+            let m = JSON.stringify({
+                type: type,
+                data: mes,
+            })
+            ws.send(m);
+        }
+
+        function wsLink() {
+            ws = new WebSocket("ws://localhost:8083/");
+
+            ws.onopen = function (socket) {
+                console.log("websocket已连接成功", socket)
+            }
+            ws.onmessage = function (e) {
+                console.log(e)
+                let data = JSON.parse(e.data);
+                if(data.success) {
+                    let type = data.data.type;
+                    switch (type) {
+                        case "setId":
+                            console.log("设置用户成功");
+                            if(!message.info) {
+                                message.info = data.data;
+                            } else {
+                                message.info = Object.assign(message.info, data.data);
+                            }
+                            break;
+                        case "join":
+                            if(!message.info) {
+                                message.info = data.data;
+                            } else {
+                                message.info = Object.assign(message.info, data.data);
+                            }
+                            window.location.href = "./html/room.html";
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    console.log(data.mes);
+                }
+            };
+
+            ws.onclose = function () {
+                console.log("onclose");
+            };
+            ws.onerror = function (e) {
+                console.log("onerror");
+                console.log(e)
+            };
+
+        }
+
+        function close() {
+            ws.close();
+        }
+        
+        /* 初始化方法 */
+        function init() {
+            wsLink();
+        }
+        init();
+            
+
+        //创建角色
+        function setName() {
+            let val = document.getElementById('name').value;   //获取input对象
+            console.log(val);
+            if(val == null || val == "") {
+                console.log("请输入正确的数字")
+            } else {
+                console.log(val);
+                sendMessage("setId", val);  //设置用户id
+            }
+        }
+
+        //登录角色
+        function join() {
+            let val = document.getElementById('name').value;   //获取input对象
+            console.log(val);
+            if(val == null || val == "") {
+                console.log("请输入正确的数字")
+            } else {
+                console.log(val);
+                sendMessage("join", val);  //设置用户id
+            }
+        }
+
+    </script>
+</html>
