@@ -9,7 +9,6 @@ server.on("connection", function(socket) {
         mes  = JSON.parse(mes);
         let type = mes.type;
         let data = mes.data;
-        console.log(type)
         switch (type) {
             //新socket连入，设置昵称，自定分配id
             case "setId":
@@ -18,7 +17,8 @@ server.on("connection", function(socket) {
                     socket.send(err(null, "用户已存在"));
                 } else {
                     let send = { type: "setId", id: data, name: "Guest" + data, num: guestNumber, };
-                    socket.send(success(send))
+                    socket.send(success(send));
+                    delete send.type;
                     namesUsed[data] = send;
                 };
                 id = data;
@@ -27,6 +27,7 @@ server.on("connection", function(socket) {
         
             //已有用户名的进行检测
             case "join":
+                console.log(namesUsed[data])
                 if(namesUsed[data]){
                     socket.send(success({ type: "join", ...namesUsed[data] }, "登陆成功"));
                     id = data;
@@ -57,7 +58,8 @@ server.on("connection", function(socket) {
                     socket.send(err(null, "房间已存在"));
                 } else {
                     let send = { type: "createRoom", id: data.room, name: "Room" + data.room, people1: data.userId,  };
-                    socket.send(success(send))
+                    socket.send(success(send));
+                    delete send.type;
                     allRooms[data.room] = send;
                 };
                 break;
